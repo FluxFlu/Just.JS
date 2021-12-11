@@ -1,7 +1,7 @@
 function valueReplace(file, type) {
     if (!file.includes(type)) return file;
     //Replaces all variable declarations:
-    let valReplace = file.match(eval(`/(?<=(?:let|const|var)[^a-bA-B_]*${type}_[A-Za-z]*[ =:][ =:]*)[a-zA-Z0-9""\\(\\[].*?(?=;)/g`));
+    let valReplace = file.match(eval(`/(?<=(?:let|const|var)[^a-bA-B_]*${type}_[A-Za-z]*[ =:][ =:]*)[a-zA-Z0-9\"\`\'\\(\\[].*?(?=;)/g`));
 
     let varNames = file.match(eval(`/(?<=(?:let|const|var).*)(?<=${type}_)(.*?)(?=[ :=])/g`));
     let lNames = file.match(eval(`/(?<=let.*)(?<=${type}_)(.*?)(?=[ :=])/g`));
