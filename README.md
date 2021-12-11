@@ -27,7 +27,7 @@ For example:
             main.js
         index.html
 ```
-```
+```js
 // This is where the function run in this example is declared.
 // This is written within a js file which doesn't need to be imported through html.
     export function mainFunction() {
@@ -37,7 +37,7 @@ For example:
     }
 ```
 
-```
+```html
 <!-- This is where you import the code, typically your 'index' file. -->
 <!-- This example includes HTML to show that nothing other than "type='module'" is required for this code to run. -->
 <body>
@@ -54,50 +54,50 @@ For example:
 
 
 `${datatype}_${variableName}` is used when declaring variables. This is optional, variables can still be declared as they would be in regular JavaScript, and they will then not have any assigned type. The data types implemented are int, float, string, and boolean.
+```js
+let int_x = 3;
+const boolean_y = true;
 
-    let int_x = 3;
-    const boolean_y = true;
 
+// These values are then referred to regularly:
 
-    // These values are then referred to regularly:
+console.log(x);
 
-    console.log(x);
-
-    if (y) {...}
-
+if (y) {...}
+```
 #### Variable values always return to their original type, but only after an expression ends. This allows for temporary coercion between types.
-
-    let int_x = 3;
-    // x is integer 3.
+```js
+let int_x = 3;
+// x is integer 3.
     
-    x += "" + 8;
-    // x is integer 38.
+x += "" + 8;
+// x is integer 38.
 
-    console.log(x + 2);
-    ^ prints out 40.
-
+console.log(x + 2);
+^ prints out 40.
+```
 #### You can also create arrays with a set type.
+```js
+let int_x = [3, "4", 2.77];
+// x is [3, 4, 2]
 
-    let int_x = [3, "4", 2.77];
-    // x is [3, 4, 2]
+x = x.reduce((e, i) => e + i);
+// x is 9
 
-    x = x.reduce((e, i) => e + i);
-    // x is 9
-
-    console.log(x);
-    // prints out 9
+console.log(x);
+// prints out 9
     
-    x += "" + 8;
-    // x is 98
+x += "" + 8;
+// x is 98
 
-    console.log(x + 2);
-    // prints out 100
-    
+console.log(x + 2);
+// prints out 100
+```
 # Notes:
 
 #### You must use semicolons properly and cannot have variables with the same variable name within the same imported function.
 
-```
+```js
 //For example:
 
 export function mainFunc() {
@@ -112,7 +112,7 @@ export function mainFunc() {
 // This is implemented to prevent unnecessary confusion between variables.
 // This only time this doesn't apply is class and object attributes (see next example).
 ```
-```
+```js
 //Class example:
 
 export function mainFunction() {
@@ -139,7 +139,7 @@ export function mainFunction() {
 
 For example:
 
-``` 
+```js
 export function mainFunction() {
     let int_x = 12;
     let int_y = 500;
@@ -147,7 +147,7 @@ export function mainFunction() {
 }
 ```
 
-```
+```html
 <script type="module">
     import { jjs } from './justjs/j.js';
     let x = 0;
