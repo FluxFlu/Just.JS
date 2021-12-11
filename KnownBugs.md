@@ -5,10 +5,16 @@
   This bug occurs because of the way variable name replacement is implemented, which I am too lazy to put time into merely to solve a bug that rarely comes up and has an existing workaround.
   
   Example:
+  ```js
   let int_foo = 3;
-  console.log(`foo`); // Prints out 'foo.evaluated().value'
-  
+  console.log(`foo`);
+  // Prints out 'foo.evaluated().value'
+  ```
+
   Solution:
+  ```js
   let int_foo = 3;
-  console.log(`f\oo`); // Prints out 'foo'
+  console.log(`f\oo`);
+  // Prints out 'foo'
+  ```
   
