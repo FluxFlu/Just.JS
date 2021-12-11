@@ -45,7 +45,6 @@ function valueReplace(file, type) {
         }
     }
 
-    let batString = false;
     if (allLines && varNames && allLines.length && allLines.length && allLines.length > 0 && varNames.length > 0) {
         for (let x = 0; x < allLines.length; x++) {
                 let allMatcher = `/(?:(?:let|const|var)[^a-bA-B_\\n\\r;]*${type}_[A-Za-z]*[ =:]*)[a-zA-Z0-9""()].*?(?:;|\\n|\\r)/`;
@@ -61,14 +60,9 @@ function valueReplace(file, type) {
                 for (let y = 0; y < varNames.length; y++) {
 
                             if (allLines[x].match(/`/g) && allLines[x].match(/`/g).length % 2 == 1) {
-                        if (batString)
-                            batString = false;
-                        else
-                            batString = true;
-                    }
 
                             let valueMatch = `/(?<=[^A-Za-z_])${varNames[y]}(?=[^A-Za-z_])(?!\\.evaluated\\(\\)\\.value)((?=.*${varNames[y]}.*new \\/\\*jjs\\*\\/ j)|(?!.*new \\/\\*jjs\\*\\/ j))/`;
-                            while(allLines[x].match(eval(valueMatch)) && !batString) {
+                            while(allLines[x].match(eval(valueMatch))) {
                             let ill = allLines[x].search(eval(valueMatch));
                             allLines[x] = allLines[x].replace(eval(valueMatch), `${varNames[y]}.evaluated().value`);
                         
