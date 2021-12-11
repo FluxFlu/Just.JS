@@ -18,6 +18,14 @@ Just.JS code is run by exporting code normally and then importing it through a s
 For example:
 
 ```
+[Example Filestructure]
+    [Test Code]
+        [justjs]
+        [script]
+            main.js
+        index.html
+```
+```
 // This is where the function run in this example is declared.
 // This is written within a js file which doesn't need to be imported through html.
     export function mainFunction() {
