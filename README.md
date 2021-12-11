@@ -15,6 +15,8 @@ In order to properly import Just.JS, the justjs folder must be right next to the
 
 Just.JS code is run by exporting code normally and then importing it through a specific async function, titled 'jjs.' 
 
+It takes two parameters; file path and function name.
+
 For example:
 
 ```
