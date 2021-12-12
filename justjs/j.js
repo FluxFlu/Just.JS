@@ -12,16 +12,6 @@ async function jjs(file, func) {
     }));
 }
 
-function returnMatch(file) {
-    let returnMatch = new RegExp(/(?<=(?:return)[A-Za-z]*[ =:]*)(?!\[)[a-zA-Z0-9""\[].*?(?!\])(?=[;\n\r])/);
-    while (file.match(returnMatch)) {
-        let i = file.match(returnMatch);
-        file = file.replace(/(?<=(?:return)[A-Za-z]*[ =:]*)(?!\[)[a-zA-Z0-9""\[].*?(?!\])(?=[;\n\r])/, `[${i}]`);
-    }
-    return file;
-}
-
-
 function stronglyTyped(file) {
     file = file.replaceAll(/(?=\/\/)(.*)[\n\r]/g, "");
     file = file.replaceAll("  ", " ");
@@ -30,8 +20,7 @@ function stronglyTyped(file) {
     file = valueReplace(file, 'float');
     file = valueReplace(file, 'boolean');
     file = valueReplace(file, 'string');
-
-    file = returnMatch(file);
+    
     return file;
 }
 
