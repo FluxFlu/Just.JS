@@ -129,7 +129,7 @@ function mainFunction() {
 // You are allowed to have as many attributes as you want with the same name in a file.
 ```
 ```js
-//Class example:
+//Iteration example:
 
 function mainFunction() {
     for (let int_x = 0; x < 9; x++) {
