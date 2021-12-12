@@ -128,6 +128,20 @@ function mainFunction() {
 // Even though you have two different values with the same name, attributes are an exception to this rule.
 // You are allowed to have as many attributes as you want with the same name in a file.
 ```
+```js
+//Class example:
+
+function mainFunction() {
+    for (let int_x = 0; x < 9; x++) {
+        document.getElementById(x).onclick = () => {
+            click(x);
+        }
+    }
+}
+      
+// This code doesn't work properly.
+// Even though you don't technically individually declare variables with the same name, you are doing so through iteration, which is not allowed.
+```
 #### Values are returned as through the jjs function. Only a single value is returned, so you must use an array to return multiple values.
 
 For example:
