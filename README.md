@@ -135,7 +135,7 @@ export function mainFunction() {
 // Even though you have two different values with the same name, attributes are an exception to this rule.
 // You are allowed to have as many attributes as you want with the same name in a file.
 ```
-#### Values are returned as an array through the jjs function. Await must be used since jjs is an async function.
+#### Values are returned as through the jjs function. Await must be used since jjs is an async function. Only a single value is returned, so you must use an array to return multiple values.
 
 For example:
 
@@ -143,7 +143,7 @@ For example:
 export function mainFunction() {
     let int_x = 12;
     let int_y = 500;
-    return x, y;
+    return [x, y];
 }
 ```
 
