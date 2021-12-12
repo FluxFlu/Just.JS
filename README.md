@@ -13,9 +13,9 @@ In order to properly import Just.JS, the justjs folder must be right next to the
 
 # How to run
 
-Just.JS code is run by exporting code normally and then importing it through a specific async function, titled 'jjs.' 
+Just.JS code is run by parsing declared functions through a specific function, titled 'jjs.' 
 
-It takes two parameters; file path and function name.
+It takes one parameter, which is the function that includes code which will be run as jjs.
 
 For example:
 
@@ -23,29 +23,23 @@ For example:
 [Example Filestructure]
     [Test Code]
         [justjs]
-        [script]
-            main.js
         index.html
-```
-```js
-// This is where the function run in this example is declared.
-// This is written within a js file which doesn't need to be imported through html.
-    export function mainFunction() {
-        let x = 3;
-
-        document.getElementById('display').innerHTML = x;
-    }
 ```
 
 ```html
 <!-- This is where you import the code, typically your 'index' file. -->
-<!-- This example includes HTML to show that nothing other than "type='module'" is required for this code to run. -->
+<!-- This example includes HTML to show that nothing other than importing the jjs file is required for this code to run. -->
 <body>
-    <script type="module">
-        import { jjs } from './justjs/j.js';
-        jjs('./script/main.js', 'mainFunction');
-        // This will only run mainFunction.
-        // This allows you to store multiple different jjs functions within the same js file. 
+    <script src="./justjs/j.js"></script>
+    
+    <script src="./script/script.js"></script>
+    <script>
+        function mainFunction() {
+        let x = 3;
+        console.log(x);
+        }
+        jjs(mainFunction);
+        // This will only run mainFunction, logging 3 to the console.
     </script>
 </body>
 ```
@@ -99,8 +93,7 @@ console.log(x + 2);
 
 ```js
 //For example:
-
-export function mainFunc() {
+function mainFunc() {
   function main() {
     let int_x = 77;
     return x;
@@ -115,7 +108,7 @@ export function mainFunc() {
 ```js
 //Class example:
 
-export function mainFunction() {
+function mainFunction() {
     class mainClass {
         constructor(x, y, width, height) {
           this.fl = x;
@@ -135,12 +128,12 @@ export function mainFunction() {
 // Even though you have two different values with the same name, attributes are an exception to this rule.
 // You are allowed to have as many attributes as you want with the same name in a file.
 ```
-#### Values are returned as through the jjs function. Await must be used since jjs is an async function. Only a single value is returned, so you must use an array to return multiple values.
+#### Values are returned as through the jjs function. Only a single value is returned, so you must use an array to return multiple values.
 
 For example:
 
 ```js
-export function mainFunction() {
+function mainFunction() {
     let int_x = 12;
     let int_y = 500;
     return [x, y];
@@ -148,15 +141,40 @@ export function mainFunction() {
 ```
 
 ```html
-<script type="module">
-    import { jjs } from './justjs/j.js';
+<script src="./justjs/j.js"></script>
+<script src="./script/script.js"></script>
+<script>
     let x = 0;
     let y = 0;
-    await jjs('./script/main.js', 'mainFunction').then(e => {
-        x = e[0];
-        y = e[1];
-    });
+    let returnValue = jjs(mainFunction);
+    x = returnValue[0];
+    y = returnValue[1];
     console.log(x); // Logs 12
     console.log(y); // Logs 500
+</script>
+```
+#### Arguments are given to a function through an array which is the second parameter in the jjs function.
+
+For example:
+
+```js
+function mainFunction(xValue, yValue) {
+    let int_x = xValue * 2;
+    let int_y = yValue * 4;
+    return [x, y];
+}
+```
+
+```html
+<script src="./justjs/j.js"></script>
+<script src="./script/script.js"></script>
+<script>
+    let x = 0;
+    let y = 0;
+    let returnValue = jjs(mainFunction, [12, 500]);
+    x = returnValue[0];
+    y = returnValue[1];
+    console.log(x); // Logs 24
+    console.log(y); // Logs 2000
 </script>
 ```
