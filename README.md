@@ -87,6 +87,16 @@ x += "" + 8;
 console.log(x + 2);
 // prints out 100
 ```
+#### Additionally, value types can be changed using cast().
+```js
+    let int_l = 0;
+    console.log(l); // Outputs 0
+    cast(l, "boolean");
+    console.log(l); // Outputs false
+    cast(l, "string");
+    l = l + 2
+    console.log(l); // Outputs "false2"
+```
 # Notes:
 
 #### You must use semicolons properly and cannot have variables with the same variable name within the same imported function.
@@ -127,20 +137,6 @@ function mainFunction() {
 // This code works fine.
 // Even though you have two different values with the same name, attributes are an exception to this rule.
 // You are allowed to have as many attributes as you want with the same name in a file.
-```
-```js
-//Iteration example:
-
-function mainFunction() {
-    for (let int_x = 0; x < 9; x++) {
-        document.getElementById(x).onclick = () => {
-            click(x);
-        }
-    }
-}
-      
-// This code doesn't work properly.
-// Even though you don't technically individually declare variables with the same name, you are doing so through iteration, which is not allowed.
 ```
 #### Values are returned as through the jjs function. Only a single value is returned, so you must use an array to return multiple values.
 
@@ -191,4 +187,18 @@ function mainFunction(xValue, yValue) {
     console.log(x); // Logs 24
     console.log(y); // Logs 2000
 </script>
+```
+
+#### Typed variables are treated like objects.
+```js
+function mainFunction() {
+    for (let int_x = 0; x < 9; x++) {
+        document.getElementById(x).onclick = () => {
+            click(x);
+        }
+    }
+}
+      
+// This code doesn't work properly.
+// This is because type variables are treated as objects, and so by the time onclick tries to reference "click(x)", x will already be permanently 9.
 ```
