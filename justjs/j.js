@@ -91,7 +91,7 @@ function valueReplace(file, type) {
                 allLines[x] = allLines[x].replace(eval(allMatcher), empt);
             }
             for (let y = 0; y < varNames.length; y++) {
-                const valueMatch = `/(?<=[^A-Za-z_])(?<!.*cast\\()${varNames[y]}(?=[^A-Za-z_])(?!\\.evaluated\\(\\)\\.value)((?=.*${varNames[y]}.*new \\/\\*jjs\\*\\/ j)|(?!.*new \\/\\*jjs\\*\\/ j))(?!\\.cast(.*))/`;
+                const valueMatch = `/(?<=[^A-Za-z_])(?<!.*cast\\()${varNames[y]}(?=[^A-Za-z_])(?!\\.evaluated\\(\\)\\.value)((?=.*${varNames[y]}.*new \\/\\*jjs\\*\\/ j)|(?!.*new \\/\\*jjs\\*\\/ j))/`;
                 while (allLines[x].match(eval(valueMatch))) {
                     const ill = allLines[x].search(eval(valueMatch));
                     allLines[x] = allLines[x].replace(eval(valueMatch), `${varNames[y]}.evaluated().value`);
@@ -178,18 +178,6 @@ class type {
     constructor(value, type) {
         this.type = type;
     }
-    cast(type) {
-        switch (type) {
-            case 'int':
-                return new jint(this.evaluated().value, this.type);
-            case 'float':
-                return new jfloat(this.evaluated().value, this.type);
-            case 'boolean':
-                return new jboolean(this.evaluated().value, this.type);
-            case 'string':
-                return new jstring(this.evaluated().value, this.type);
-        }
-    }
     evaluated() {
         this.updateValue();
         return this;
@@ -232,7 +220,6 @@ class jint extends type {
             }
         }
     }
-    cast(type) { return super.cast(type); }
     evaluated() { return super.evaluated(); }
     updateValue() {
         if (this.type != 'const') {
@@ -265,7 +252,6 @@ class jfloat extends type {
             }
         }
     }
-    cast(type) { return super.cast(type); }
     evaluated() { return super.evaluated(); }
     updateValue() {
         if (this.type != 'const') {
@@ -298,7 +284,6 @@ class jboolean extends type {
             }
         }
     }
-    cast(type) { return super.cast(type); }
     evaluated() { return super.evaluated(); }
     updateValue() {
         if (this.type != 'const') {
@@ -331,7 +316,6 @@ class jstring extends type {
             }
         }
     }
-    cast(type) { return super.cast(type); }
     evaluated() { return super.evaluated(); }
     updateValue() {
         if (this.type != 'const') {
