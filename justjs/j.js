@@ -10,25 +10,25 @@ function valueReplace(file, type) {
 
     // Gets the names of all variables
     const varNames = file.match(eval(`/(?<=(?:let|const|var).*)(?<=${type}_)(.*?)(?=[ :=])/g`));
-    
+
     // Gets the names of all let variables
     const lNames = file.match(eval(`/(?<=let.*)(?<=${type}_)(.*?)(?=[ :=])/g`));
-    
+
     // Gets the names of all const variables
     const cNames = file.match(eval(`/(?<=const.*)(?<=${type}_)(.*?)(?=[ :=])/g`));
-    
+
     // Gets the names of all var variables
     const vNames = file.match(eval(`/(?<=var.*)(?<=${type}_)(.*?)(?=[ :=])/g`));
 
     // Gets all lines in the string as an array
     const allLines = file.match(/(.*)[^\n\r]/g);
 
-    // Gets every value from the allLines array that is a string literal 
+    // Gets every value from the allLines array that is a string literal
     const stringedLines = allLines.map(e => (e.match(/((?=["'])(?:"[^"\\]*(?:\\[\s\S][^"\\]*)*"|'[^'\\]*(?:\\[\s\S][^'\\]*)*'))/g)) ? e.match(/((?=["'])(?:"[^"\\]*(?:\\[\s\S][^"\\]*)*"|'[^'\\]*(?:\\[\s\S][^'\\]*)*'))/g) : [""]);
 
     // Removes all the values from stringedLines that are part of a variable declaration that has already been managed by a previous execution of 'valueReplace'
     stringedLines.forEach(e => { if (allLines[stringedLines.indexOf(e)].includes(" = new /*jjs*/ j")) { stringedLines[stringedLines.indexOf(e)] = '' } });
-    
+
     // Declares reStringed (used to store string literals that will be added back in after they are removed for manipulation purposes)
     const reStringed = [];
 
@@ -60,7 +60,7 @@ function valueReplace(file, type) {
             if (lNames && lNames.includes(varNames[numOf])) stat = "let";
             if (cNames && cNames.includes(varNames[numOf])) stat = "const";
             if (vNames && vNames.includes(varNames[numOf])) stat = "var";
-            const ill = allLines[x].search(eval(`/(?<=[^A-Za-z_])${varNames[numOf]}(?=\\.evaluated\\(\\)\\.value)/`));
+            const ill = allLines[x].search(eval(`/(?:(?:let|const|var)[^a-bA-B_\\n\\r;]*${type}_[A-Za-z]*[ =:]*)[a-zA-Z0-9""()].*?(?:;|\\n|\\r)/`));
             allLines[x] = allLines[x].replace(eval(`/(?:(?:let|const|var)[^a-bA-B_\\n\\r;]*${type}_[A-Za-z]*[ =:]*)[a-zA-Z0-9""()].*?(?:;|\\n|\\r)/`), `${stat} ${varNames[numOf]} = new /*jjs*/ j${type} (${valReplace[numOf]}, '${stat}' );`);
             numOf++;
             for (let i = 0; i < reStringed.length; i++) {
@@ -73,10 +73,9 @@ function valueReplace(file, type) {
     }
     // }
 
-
     // Replaces every time a variable is referenced with variable.evaluated().value,
     //      in order to not directly reference objects as though they were values: {
-    
+
     // ( The reason .evaluated() is used is as a way to coerce back to the original data type, and then return the post-coersion object )
 
     if (allLines && varNames && allLines.length && allLines.length && allLines.length > 0 && varNames.length > 0) {
@@ -92,7 +91,7 @@ function valueReplace(file, type) {
                 allLines[x] = allLines[x].replace(eval(allMatcher), empt);
             }
             for (let y = 0; y < varNames.length; y++) {
-                const valueMatch = `/(?<=[^A-Za-z_])${varNames[y]}(?=[^A-Za-z_])(?!\\.evaluated\\(\\)\\.value)((?=.*${varNames[y]}.*new \\/\\*jjs\\*\\/ j)|(?!.*new \\/\\*jjs\\*\\/ j))/`;
+                const valueMatch = `/(?<=[^A-Za-z_])(?<!.*cast\\()${varNames[y]}(?=[^A-Za-z_])(?!\\.evaluated\\(\\)\\.value)((?=.*${varNames[y]}.*new \\/\\*jjs\\*\\/ j)|(?!.*new \\/\\*jjs\\*\\/ j))(?!\\.cast(.*))/`;
                 while (allLines[x].match(eval(valueMatch))) {
                     const ill = allLines[x].search(eval(valueMatch));
                     allLines[x] = allLines[x].replace(eval(valueMatch), `${varNames[y]}.evaluated().value`);
@@ -101,6 +100,21 @@ function valueReplace(file, type) {
                         const e = reStringed[i];
                         if (e[0] == x && e[1] > ill) {
                             reStringed[i][1] += 18;
+                        }
+                    }
+                }
+            }
+            for (let y = 0; y < varNames.length; y++) {
+                    const valueMatch = eval(`/(?<!${varNames[y]} = .*?)cast\\(.*?${varNames[y]}/`);//
+                    while (allLines[x].match(valueMatch)) {
+                    const ill = allLines[x].search(valueMatch);
+                    const valm = allLines[x].match(valueMatch);
+                    allLines[x] = allLines[x].replace(valueMatch, `${varNames[y]} = ${valm}`);
+
+                    for (let i = 0; i < reStringed.length; i++) {
+                        const e = reStringed[i];
+                        if (e[0] == x && e[1] > ill) {
+                            reStringed[i][1] += varNames[y].length + 3;
                         }
                     }
                 }
@@ -125,36 +139,92 @@ function valueReplace(file, type) {
         }
         for (let i = 0; i < lineValues.length; i++) {
             if (lineValues[i][0] == x) {
-                console.log("cock and actual literal balls");
                 allLines[x] = allLines[x].substring(0, lineValues[i][1]) + lineValues[i][2] + allLines[x].substring(lineValues[i][1] + lineValues[i][2].length);
             }
         }
     }
     // }
-    
+
 
 
     file = allLines.join("\n");
-
+    console.log(file);
 
     return file;
 }
 
+// Create cast function: {
+
+function cast(inst, stat) {
+    console.log(inst);
+    console.log(stat);
+    switch (stat) {
+        case 'int':
+            return inst = new jint(inst.evaluated().value, 'let');
+        case 'float':
+            return inst = new jfloat(inst.evaluated().value, 'let');
+        case 'boolean':
+            return inst = new jboolean(inst.evaluated().value, 'let');
+        case 'string':
+            return inst = new jstring(inst.evaluated().value, 'let');
+    }
+}
+
+// }
+
 // Create type classes: {
 
-class jint {
+class type {
     constructor(value, type) {
         this.type = type;
+    }
+    cast(type) {
+        switch (type) {
+            case 'int':
+                return new jint(this.evaluated().value, this.type);
+            case 'float':
+                return new jfloat(this.evaluated().value, this.type);
+            case 'boolean':
+                return new jboolean(this.evaluated().value, this.type);
+            case 'string':
+                return new jstring(this.evaluated().value, this.type);
+        }
+    }
+    evaluated() {
+        this.updateValue();
+        return this;
+    }
+}
+
+function evInt(value) {
+    if (isNaN(parseInt(value))) {
+        return (value + 1 - 1);
+    } else {
+        return parseInt(value);
+    }
+}
+
+function evFloat(value) {
+    if (isNaN(parseFloat(value))) {
+        return (value + 1 - 1);
+    } else {
+        return parseFloat(value);
+    }
+}
+
+class jint extends type {
+    constructor(value, type) {
+        super(type);
         if (this.type != 'const') {
             this.value = value;
             this.updateValue();
         }
         else {
             if (this.value instanceof Array) {
-                this.value = this.value.map(e => parseInt(e));
+                this.value = this.value.map(e => evInt(e));
             } else {
                 Object.defineProperty(this, "value", {
-                    value: parseInt(value),
+                    value: evInt(value),
                     writable: false,
                     enumerable: true,
                     configurable: true
@@ -162,34 +232,32 @@ class jint {
             }
         }
     }
-    evaluated() {
-        this.updateValue();
-        return this;
-    }
+    cast(type) { return super.cast(type); }
+    evaluated() { return super.evaluated(); }
     updateValue() {
         if (this.type != 'const') {
             if (this.value instanceof Array) {
-                this.value = this.value.map(e => parseInt(e));
+                this.value = this.value.map(e => evInt(e));
             } else {
-                this.value = parseInt(this.value);
+                this.value = evInt(this.value);
             }
         }
     }
 }
 
-class jfloat {
+class jfloat extends type {
     constructor(value, type) {
-        this.type = type;
+        super(type);
         if (this.type != 'const') {
             this.value = value;
             this.updateValue();
         }
         else {
             if (this.value instanceof Array) {
-                this.value = this.value.map(e => parseFloat(e));
+                this.value = this.value.map(e => evFloat(e));
             } else {
                 Object.defineProperty(this, "value", {
-                    value: parseFloat(value),
+                    value: evFloat(value),
                     writable: false,
                     enumerable: true,
                     configurable: true
@@ -197,24 +265,22 @@ class jfloat {
             }
         }
     }
-    evaluated() {
-        this.updateValue();
-        return this;
-    }
+    cast(type) { return super.cast(type); }
+    evaluated() { return super.evaluated(); }
     updateValue() {
         if (this.type != 'const') {
             if (this.value instanceof Array) {
-                this.value = this.value.map(e => parseFloat(e));
+                this.value = this.value.map(e => evFloat(e));
             } else {
-                this.value = parseFloat(this.value);
+                this.value = evFloat(this.value);
             }
         }
     }
 }
 
-class jboolean {
+class jboolean extends type {
     constructor(value, type) {
-        this.type = type;
+        super(type);
         if (this.type != 'const') {
             this.value = value;
             this.updateValue();
@@ -232,10 +298,8 @@ class jboolean {
             }
         }
     }
-    evaluated() {
-        this.updateValue();
-        return this;
-    }
+    cast(type) { return super.cast(type); }
+    evaluated() { return super.evaluated(); }
     updateValue() {
         if (this.type != 'const') {
             if (this.value instanceof Array) {
@@ -247,9 +311,9 @@ class jboolean {
     }
 }
 
-class jstring {
+class jstring extends type {
     constructor(value, type) {
-        this.type = type;
+        super(type);
         if (this.type != 'const') {
             this.value = value;
             this.updateValue();
@@ -267,10 +331,8 @@ class jstring {
             }
         }
     }
-    evaluated() {
-        this.updateValue();
-        return this;
-    }
+    cast(type) { return super.cast(type); }
+    evaluated() { return super.evaluated(); }
     updateValue() {
         if (this.type != 'const') {
             if (this.value instanceof Array) {
