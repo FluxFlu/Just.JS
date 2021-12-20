@@ -148,7 +148,6 @@ function valueReplace(file, type) {
 
 
     file = allLines.join("\n");
-    console.log(file);
 
     return file;
 }
@@ -156,8 +155,6 @@ function valueReplace(file, type) {
 // Create cast function: {
 
 function cast(inst, stat) {
-    console.log(inst);
-    console.log(stat);
     switch (stat) {
         case 'int':
             return inst = new jint(inst.evaluated().value, 'let');
