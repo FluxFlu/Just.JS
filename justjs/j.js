@@ -343,7 +343,8 @@ function stronglyTyped(file) {
     file = file.replaceAll(/(?=\/\/)(.*)[\n\r]/g, "");
 
     //  Removes double spaces
-    file = file.replaceAll("  ", " ");
+    while (file.includes("  "))
+        file = file.replaceAll("  ", " ");
 
     // Calls the value replace function for each data type
     file = valueReplace(file, 'int');
