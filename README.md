@@ -68,7 +68,7 @@ x += "" + 8;
 // x is integer 38.
 
 console.log(x + 2);
-^ prints out 40.
+// ^ prints out 40.
 ```
 #### You can also create arrays with a set type.
 ```js
