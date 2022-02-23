@@ -32,7 +32,6 @@ For example:
 <body>
     <script src="./justjs/j.js"></script>
     
-    <script src="./script/script.js"></script>
     <script>
         function mainFunction() {
         let x = 3;
